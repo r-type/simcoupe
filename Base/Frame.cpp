@@ -498,7 +498,14 @@ void Redraw ()
     Video::Update(pDisplayScreen);
 }
 
-
+#ifdef __LIBRETRO__
+extern "C" {
+#define LIBCO_C 
+#include "libco/libco.h"
+extern cothread_t mainThread;
+extern cothread_t emuThread;
+}
+#endif
 // Determine the frame difference from last time and flip buffers
 void Flip (CScreen *pScreen_)
 {
@@ -529,6 +536,9 @@ void Flip (CScreen *pScreen_)
     // Flip screen buffers
     std::swap(pScreen, pLastScreen);
     std::swap(pGuiScreen, pLastGuiScreen);
+#ifdef __LIBRETRO__
+	co_switch(mainThread);
+#endif
 }
 
 

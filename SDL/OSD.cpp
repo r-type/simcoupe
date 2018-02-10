@@ -31,6 +31,9 @@
 #include "Options.h"
 #include "Parallel.h"
 
+#ifdef __LIBRETRO__
+extern char retro_system_data[512];
+#endif
 
 bool OSD::Init (bool /*fFirstInit_=false*/)
 {
@@ -39,7 +42,11 @@ bool OSD::Init (bool /*fFirstInit_=false*/)
     SetErrorMode(SEM_FAILCRITICALERRORS);
 #endif
 
+#ifdef __LIBRETRO__
+    if (SDL_Init(SDL_INIT_TIMER| SDL_INIT_VIDEO | SDL_INIT_CDROM | SDL_INIT_JOYSTICK) < 0)
+#else
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+#endif
     {
         Message(msgError, "SDL init failed: %s", SDL_GetError());
         return false;
@@ -83,6 +90,7 @@ const char* OSD::MakeFilePath (int nDir_, const char* pcszFile_/*=""*/)
         strcat(szPath, "/");
 #endif
 
+
     switch (nDir_)
     {
         case MFP_SETTINGS:
@@ -90,6 +98,9 @@ const char* OSD::MakeFilePath (int nDir_, const char* pcszFile_/*=""*/)
             strcat(szPath, "Library/Preferences/SimCoupe/");
 #elif !defined(_WINDOWS) && !defined(__AMIGAOS4__)
             strcat(szPath, ".simcoupe/");
+#endif
+#ifdef __LIBRETRO__
+	    sprintf(szPath,"%s/\0",retro_system_data);
 #endif
             break;
 
@@ -133,6 +144,9 @@ const char* OSD::MakeFilePath (int nDir_, const char* pcszFile_/*=""*/)
             strncat(szPath, "SimCoupe/", MAX_PATH-strlen(szPath)-1);
             szPath[MAX_PATH-1] = '\0';
 #endif
+#ifdef __LIBRETRO__
+	    sprintf(szPath,"%s/\0",retro_system_data);
+#endif
             break;
         }
 
@@ -151,6 +165,9 @@ const char* OSD::MakeFilePath (int nDir_, const char* pcszFile_/*=""*/)
 #else
             // Fall back on an empty path as a safe default
             szPath[0] = '\0';
+#endif
+#ifdef __LIBRETRO__
+	    sprintf(szPath,"%s/Resource/\0",retro_system_data);
 #endif
             break;
         }

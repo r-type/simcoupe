@@ -34,7 +34,9 @@
 #include "Sound.h"
 #include "SDL12.h"
 #include "SDL20.h"
-
+#ifdef __LIBRETRO__
+extern int pauseg;
+#endif
 bool UI::Init (bool fFirstInit_/*=false*/)
 {
     bool fRet = true;
@@ -111,7 +113,9 @@ bool UI::CheckEvents ()
     // If the GUI is active the input won't be polled by CPU.cpp, so do it here
     if (GUI::IsActive())
         Input::Update();
-
+#ifdef __LIBRETRO__
+	if(pauseg==-1)return false;
+#endif
     while (1)
     {
         while (SDL_PollEvent(&event))

@@ -27,8 +27,13 @@
 #include "UI.h"
 
 #ifndef USE_SDL2
-
+#ifndef __LIBRETRO__
 #define FULLSCREEN_DEPTH    16
+#else
+#define FULLSCREEN_DEPTH    32
+extern int retroh,retrow;
+extern uint32_t *videoBuffer;
+#endif
 
 static DWORD aulPalette[N_PALETTE_COLOURS];
 static DWORD aulScanline[N_PALETTE_COLOURS];
@@ -63,9 +68,14 @@ bool SDLSurface::Init (bool fFirstInit_)
 
     if (fFirstInit_)
     {
+#ifndef __LIBRETRO__
         const SDL_VideoInfo *pvi = SDL_GetVideoInfo();
         nDesktopWidth = pvi->current_w;
         nDesktopHeight = pvi->current_h;
+#else
+        nDesktopWidth = retrow;
+        nDesktopHeight = retroh;
+#endif
         TRACE("Desktop resolution: %dx%d\n", nDesktopWidth, nDesktopHeight);
     }
 
@@ -110,14 +120,14 @@ bool SDLSurface::DrawChanges (CScreen* pScreen_, bool *pafDirty_)
 {
     if (!pBack)
         return false;
-
+#ifndef __LIBRETRO__
     // Lock the surface for direct access below
     if (SDL_MUSTLOCK(pBack) && SDL_LockSurface(pBack) < 0)
     {
         TRACE("!!! SDL_LockSurface failed: %s\n", SDL_GetError());
         return false;
     }
-
+#endif
     int nWidth = Frame::GetWidth();
     int nHeight = Frame::GetHeight();
 
@@ -237,11 +247,11 @@ bool SDLSurface::DrawChanges (CScreen* pScreen_, bool *pafDirty_)
         }
         break;
     }
-
+#ifndef __LIBRETRO__
     // Unlock the surface now we're done drawing on it
     if (pBack && SDL_MUSTLOCK(pBack))
         SDL_UnlockSurface(pBack);
-
+#endif
     // Find the first changed display line
     int nChangeFrom = 0;
     for ( ; nChangeFrom < nHeight && !pafDirty_[nChangeFrom] ; nChangeFrom++);
@@ -270,7 +280,9 @@ bool SDLSurface::DrawChanges (CScreen* pScreen_, bool *pafDirty_)
 
         // Blit the updated area and inform SDL it's changed
         SDL_BlitSurface(pBack, &rect, pFront, &rectFront);
+#ifndef __LIBRETRO__
         SDL_UpdateRects(pFront, 1, &rectFront);
+#endif
     }
 
     // Success
@@ -301,7 +313,10 @@ void SDLSurface::UpdateSize ()
         // Set the video mode
         pFront = SDL_SetVideoMode(nWidth, nHeight, nDepth, SDL_FULLSCREEN|SDL_HWSURFACE);
     }
-
+#ifdef __LIBRETRO__
+	printf("%dx%d\n",nWidth, nHeight);
+	videoBuffer=(unsigned int *)pFront->pixels;
+#endif
     // Did we fail to create the front buffer?
     if (!pFront)
         TRACE("Failed to create front buffer!\n");

@@ -40,14 +40,15 @@ static void ExitSDLSound ();
 static void SoundCallback (void *pvParam_, Uint8 *pbStream_, int nLen_);
 
 ////////////////////////////////////////////////////////////////////////////////
-
-
+#ifdef __LIBRETRO__
+void retro_audiocb(signed short int *sound_buffer,int sndbufsize);
+#endif
 bool Audio::Init (bool fFirstInit_/*=false*/)
 {
     // Clear out any existing config before starting again
     Exit(true);
     TRACE("-> Audio::Init(%s)\n", fFirstInit_ ? "first" : "");
-
+#ifndef __LIBRETRO__
     // All sound disabled?
     if (!GetOption(sound))
         TRACE("Sound disabled, nothing to initialise\n");
@@ -63,9 +64,10 @@ bool Audio::Init (bool fFirstInit_/*=false*/)
 
         TRACE("Sample buffer size = %d samples\n", m_nSampleBufferSize/SAMPLE_BLOCK);
     }
-
+#endif
     // Sound initialisation failure isn't fatal, so always return success
     TRACE("<- Audio::Init()\n");
+
     return true;
 }
 
@@ -80,6 +82,7 @@ void Audio::Exit (bool fReInit_/*=false*/)
 
 bool Audio::AddData (Uint8* pbData_, int nLength_)
 {
+#ifndef __LIBRETRO__
     int nSpace = 0;
 
     // Calculate the frame time (in ms) from the sample data length
@@ -88,6 +91,7 @@ bool Audio::AddData (Uint8* pbData_, int nLength_)
     // Loop until everything has been written
     while (m_pbNow && nLength_ > 0)
     {
+
         SDL_LockAudio();
 
         // Determine the available space
@@ -110,6 +114,7 @@ bool Audio::AddData (Uint8* pbData_, int nLength_)
 
         // Wait for more space
         SDL_Delay(1);
+
     }
 
     // How long since the frame?
@@ -142,27 +147,35 @@ bool Audio::AddData (Uint8* pbData_, int nLength_)
 
             // Sleep a short time before checking again
             SDL_Delay(1);
+
         }
     }
-
+#else
+    retro_audiocb((signed short int *)pbData_,(1+nLength_)/4);
+#endif
     return true;
 }
 
 void Audio::Silence ()
 {
+#ifndef __LIBRETRO__
     if (!IsAvailable())
         return;
 
     SDL_LockAudio();
+
     memset(m_pbStart, 0x00, m_pbEnd-m_pbStart);
     m_pbNow = m_pbEnd;
+
     SDL_UnlockAudio();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
 bool InitSDLSound ()
 {
+#ifndef __LIBRETRO__
     SDL_AudioSpec sDesired = { };
     sDesired.freq = SAMPLE_FREQ;
     sDesired.format = AUDIO_S16LSB;
@@ -177,20 +190,22 @@ bool InitSDLSound ()
     }
 
     SDL_PauseAudio(0);
-
+#endif
     return true;
 }
 
 void ExitSDLSound ()
 {
+#ifndef __LIBRETRO__
     SDL_CloseAudio();
-
     m_pbNow = m_pbStart = m_pbEnd = nullptr;
+#endif
 }
 
 // Callback used by SDL to request more sound data to play
 void SoundCallback (void * /*pvParam_*/, Uint8 *pbStream_, int nLen_)
 {
+#ifndef __LIBRETRO__
     // Determine how much data we have available, how much to copy, and what is left over
     int nData = static_cast<int>(m_pbNow - m_pbStart);
     int nCopy = std::min(nData, nLen_), nLeft = nData-nCopy;
@@ -202,4 +217,5 @@ void SoundCallback (void * /*pvParam_*/, Uint8 *pbStream_, int nLen_)
     // Move any remaining data to the start of our buffer
     m_pbNow = m_pbStart + nLeft;
     memmove(m_pbStart, m_pbStart+nCopy, nLeft);
+#endif
 }

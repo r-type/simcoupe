@@ -33,7 +33,7 @@
 #include "Video.h"
 
 
-extern "C" int main (int argc_, char* argv_[])
+extern "C" int smain (int argc_, char* argv_[])
 {
     if (Main::Init(argc_, argv_))
         CPU::Run();

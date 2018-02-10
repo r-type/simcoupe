@@ -33,7 +33,9 @@
 #include "UI.h"
 
 //#define USE_JOYPOLLING
-
+#ifdef __LIBRETRO__
+extern int gui_poll_events(void);
+#endif
 int nJoystick1 = -1, nJoystick2 = -1;
 SDL_Joystick *pJoystick1, *pJoystick2;
 
@@ -262,7 +264,9 @@ bool Input::FilterEvent (SDL_Event* pEvent_)
             int nChr = (nKey < HK_SPACE || (nKey < HK_MIN && (pKey->mod & KMOD_CTRL))) ? nKey : 0;
 #else
             int nChr = fPress ? pKey->unicode : 0;
-
+#ifdef __LIBRETRO__
+            nChr = fPress ? pKey->sym : 0;
+#endif
             if (fPress)
             {
                 // Force some simple keys that might be wrong

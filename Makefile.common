@@ -1,0 +1,128 @@
+SDLOBJ = $(CORE_DIR)
+
+SDLOBJS := \
+	$(SDLOBJ)/sdl-libretro/src/SDL_error.o $(SDLOBJ)/sdl-libretro/src/SDL_fatal.o \
+	$(SDLOBJ)/sdl-libretro/src/SDL.o $(SDLOBJ)/sdl-libretro/src/audio/SDL_wave.o \
+	$(SDLOBJ)/sdl-libretro/src/audio/SDL_audiodev.o $(SDLOBJ)/sdl-libretro/src/audio/SDL_mixer_MMX.o \
+	$(SDLOBJ)/sdl-libretro/src/audio/SDL_mixer_m68k.o $(SDLOBJ)/sdl-libretro/src/audio/SDL_audiocvt.o \
+	$(SDLOBJ)/sdl-libretro/src/audio/SDL_audio.o $(SDLOBJ)/sdl-libretro/src/audio/SDL_mixer.o \
+	$(SDLOBJ)/sdl-libretro/src/audio/SDL_mixer_MMX_VC.o $(SDLOBJ)/sdl-libretro/src/cdrom/SDL_cdrom.o \
+	$(SDLOBJ)/sdl-libretro/src/cpuinfo/SDL_cpuinfo.o $(SDLOBJ)/sdl-libretro/src/events/SDL_active.o \
+	$(SDLOBJ)/sdl-libretro/src/events/SDL_quit.o $(SDLOBJ)/sdl-libretro/src/events/SDL_mouse.o \
+	$(SDLOBJ)/sdl-libretro/src/events/SDL_events.o $(SDLOBJ)/sdl-libretro/src/events/SDL_keyboard.o \
+	$(SDLOBJ)/sdl-libretro/src/events/SDL_expose.o $(SDLOBJ)/sdl-libretro/src/events/SDL_resize.o \
+	$(SDLOBJ)/sdl-libretro/src/file/SDL_rwops.o $(SDLOBJ)/sdl-libretro/src/stdlib/SDL_string.o \
+	$(SDLOBJ)/sdl-libretro/src/stdlib/SDL_malloc.o $(SDLOBJ)/sdl-libretro/src/stdlib/SDL_iconv.o \
+	$(SDLOBJ)/sdl-libretro/src/stdlib/SDL_getenv.o $(SDLOBJ)/sdl-libretro/src/stdlib/SDL_qsort.o \
+	$(SDLOBJ)/sdl-libretro/src/stdlib/SDL_stdlib.o $(SDLOBJ)/sdl-libretro/src/thread/SDL_thread.o \
+	$(SDLOBJ)/sdl-libretro/src/timer/SDL_timer.o $(SDLOBJ)/sdl-libretro/src/video/SDL_cursor.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_blit_0.o $(SDLOBJ)/sdl-libretro/src/video/SDL_yuv.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_bmp.o $(SDLOBJ)/sdl-libretro/src/video/SDL_video.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_yuv_mmx.o $(SDLOBJ)/sdl-libretro/src/video/SDL_surface.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_pixels.o $(SDLOBJ)/sdl-libretro/src/video/SDL_stretch.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_blit_A.o $(SDLOBJ)/sdl-libretro/src/video/SDL_blit_N.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_blit_1.o $(SDLOBJ)/sdl-libretro/src/video/SDL_blit.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_yuv_sw.o $(SDLOBJ)/sdl-libretro/src/video/SDL_RLEaccel.o \
+	$(SDLOBJ)/sdl-libretro/src/video/SDL_gamma.o $(SDLOBJ)/sdl-libretro/src/joystick/SDL_joystick.o \
+	$(SDLOBJ)/sdl-libretro/src/video/libretro/SDL_LIBRETROmouse.o \
+	$(SDLOBJ)/sdl-libretro/src/video/libretro/SDL_LIBRETROevents.o \
+	$(SDLOBJ)/sdl-libretro/src/video/libretro/SDL_LIBRETROvideo.o \
+	$(SDLOBJ)/sdl-libretro/src/video/libretro/SDL_LIBRETROkeyboard.o $(SDLOBJ)/sdl-libretro/src/joystick/libretro/SDL_sysjoystick.o \
+	$(SDLOBJ)/sdl-libretro/src/audio/libretro/SDL_LIBRETROaudio.o \
+	$(SDLOBJ)/sdl-libretro/src/loadso/dummy/SDL_sysloadso.o 
+
+ifeq ($(platform), unix)
+SDLOBJS += $(SDLOBJ)/sdl-libretro/src/cdrom/linux/SDL_syscdrom.o \
+$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_syscond.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_syssem.o $(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_sysmutex.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_systhread.o  \
+	$(SDLOBJ)/sdl-libretro/src/timer/libretro/SDL_systimer.o 
+endif
+
+ifeq ($(platform), win)
+SDLOBJS += $(SDLOBJ)/sdl-libretro/src/cdrom/win32/SDL_syscdrom.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/generic/SDL_syscond.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_syssem.o $(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_sysmutex.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_systhread.o \
+	$(SDLOBJ)/sdl-libretro/src/timer/win32/SDL_systimer.o 
+endif
+
+
+ifeq ($(platform), wincross64)
+SDLOBJS += $(SDLOBJ)/sdl-libretro/src/cdrom/win32/SDL_syscdrom.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/generic/SDL_syscond.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_syssem.o $(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_sysmutex.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/win32/SDL_systhread.o \
+	$(SDLOBJ)/sdl-libretro/src/timer/win32/SDL_systimer.o 
+endif
+
+ifeq ($(platform), wiiu)
+SDLOBJS += $(SDLOBJ)/sdl-libretro/src/cdrom/dummy/SDL_syscdrom.o\
+	$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_syscond.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_syssem.o $(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_sysmutex.o \
+	$(SDLOBJ)/sdl-libretro/src/thread/pthread/SDL_systhread.o   \
+	$(SDLOBJ)/sdl-libretro/src/timer/libretro/SDL_systimer.o 
+endif
+
+COBJS = \
+$(CORE_DIR)/Base/unzip.o \
+$(CORE_DIR)/Base/ioapi.o \
+$(CORE_DIR)/SDL/libretro.o 
+
+CPPOBJS = \
+$(CORE_DIR)/SDL/MIDI.o \
+$(CORE_DIR)/SDL/OSD.o \
+$(CORE_DIR)/SDL/UI.o \
+$(CORE_DIR)/SDL/Audio.o \
+$(CORE_DIR)/SDL/SDL12.o \
+$(CORE_DIR)/SDL/Input.o \
+$(CORE_DIR)/SDL/Floppy.o \
+$(CORE_DIR)/SDL/IDEDisk.o \
+$(CORE_DIR)/Base/Mouse.o \
+$(CORE_DIR)/Base/Screen.o \
+$(CORE_DIR)/Base/Symbol.o \
+$(CORE_DIR)/Base/Expr.o \
+$(CORE_DIR)/Base/BlueAlpha.o \
+$(CORE_DIR)/Base/AVI.o \
+$(CORE_DIR)/Base/SDIDE.o \
+$(CORE_DIR)/Base/CPU.o \
+$(CORE_DIR)/Base/Paula.o \
+$(CORE_DIR)/Base/Parallel.o \
+$(CORE_DIR)/Base/Clock.o \
+$(CORE_DIR)/Base/Atom.o \
+$(CORE_DIR)/Base/Keyboard.o \
+$(CORE_DIR)/Base/SAMVox.o \
+$(CORE_DIR)/Base/Video.o \
+$(CORE_DIR)/Base/Keyin.o \
+$(CORE_DIR)/Base/PNG.o \
+$(CORE_DIR)/Base/Font.o \
+$(CORE_DIR)/Base/Stream.o \
+$(CORE_DIR)/Base/Action.o \
+$(CORE_DIR)/Base/GUI.o \
+$(CORE_DIR)/Base/Tape.o \
+$(CORE_DIR)/Base/BlipBuffer.o \
+$(CORE_DIR)/Base/Util.o \
+$(CORE_DIR)/Base/Memory.o \
+$(CORE_DIR)/Base/GIF.o \
+$(CORE_DIR)/Base/Debug.o \
+$(CORE_DIR)/Base/WAV.o \
+$(CORE_DIR)/Base/GUIDlg.o \
+$(CORE_DIR)/Base/Options.o \
+$(CORE_DIR)/Base/Drive.o \
+$(CORE_DIR)/Base/ATA.o \
+$(CORE_DIR)/Base/Frame.o \
+$(CORE_DIR)/Base/Joystick.o \
+$(CORE_DIR)/Base/AtaAdapter.o \
+$(CORE_DIR)/Base/Sound.o \
+$(CORE_DIR)/Base/SAA1099.o \
+$(CORE_DIR)/Base/Breakpoint.o \
+$(CORE_DIR)/Base/AtomLite.o \
+$(CORE_DIR)/Base/HardDisk.o \
+$(CORE_DIR)/Base/IO.o \
+$(CORE_DIR)/Base/Disassem.o \
+$(CORE_DIR)/Base/Main.o \
+$(CORE_DIR)/Base/GUIIcons.o \
+$(CORE_DIR)/Base/SID.o \
+$(CORE_DIR)/Base/Disk.o 
+
+
