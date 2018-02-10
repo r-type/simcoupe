@@ -413,10 +413,19 @@ bool Input::FilterEvent (SDL_Event* pEvent_)
             // Mouse captured for emulation?
             else if (fMouseActive)
             {
+#ifdef __LIBRETRO__
+		static int lx=nX,ly=nY;
+
+                // Work out the relative movement since last time
+                nX -= lx;
+                nY -= ly;
+
+		lx=pEvent_->motion.x;ly=pEvent_->motion.y;
+#else
                 // Work out the relative movement since last time
                 nX -= nCentreX;
                 nY -= nCentreY;
-
+#endif
                 // Any native movement?
                 if (nX || nY)
                 {
